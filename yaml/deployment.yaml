@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rtsp-app
+  labels:
+    app: rtsp-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rtsp-app
+  template:
+    metadata:
+      labels:
+        app: rtsp-app
+    spec:
+      containers:
+      - name: rtsp-app
+        image: lucarv/rtsp-controller
+        imagePullPolicy: "Always"
+        ports:
+        - containerPort: 80
+        env:
+            - name: REDIS_URL
+              value: redis://192.168.1.202:6379
+        volumeMounts:
+          - mountPath: "/data"
+            name: rtsp-nfs
+      volumes:
+        - name: rtsp-nfs
+          persistentVolumeClaim:
+            claimName: rtsp-pvc
